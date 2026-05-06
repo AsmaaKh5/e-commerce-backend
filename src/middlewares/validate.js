@@ -4,6 +4,8 @@ const httpStatusText = require('../utils/httpStatusText');
 
 module.exports = (validations) => {
   return async (req, res, next) => {
+
+    if (!validations || !Array.isArray(validations)) return next();
     // شغّلي كل الـ validators
     await Promise.all(validations.map((v) => v.run(req)));
 

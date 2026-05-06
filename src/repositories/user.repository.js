@@ -7,10 +7,19 @@ class UserRepository extends BaseRepository {
   }
 
   // ============ Find Methods ============
-
-  async findByEmail(email, options = {}) {
-    return await this.findOne({ email: email.toLowerCase() }, options);
-  }
+async findByEmail(email, options = {}) {
+    // نعمل normalize للإيميل قبل البحث
+    const normalizedEmail = email.toLowerCase().replace(/\./g, '');
+    return await this.findOne(
+        { 
+            $or: [
+                { email: email.toLowerCase() },
+                { email: normalizedEmail }
+            ]
+        }, 
+        options
+    );
+}
 
   /**
    * Find user with password (for login)

@@ -58,6 +58,16 @@ exports.verifyResetCodeValidator = [
     .isLength({ min: 6, max: 6 }).withMessage('Code must be 6 digits')
 ];
 
+exports.resetPasswordValidator = [
+  body('email')
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please provide a valid email'),
+  
+  body('newPassword')
+    .notEmpty().withMessage('New password is required')
+    .isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+];
+
 exports.verifyEmailValidator = [
   body('code')
     .notEmpty().withMessage('Verification code is required')
