@@ -27,11 +27,13 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // ============ Routes ============
 app.get('/', (req, res) => {
   res.json({
-    status: httpStatusText.SUCCESS,
+    status: 'success',
     message: '🚀 E-commerce API is running!'
   });
 });
 
+// All API routes
+app.use('/api/v1', require('./routes'));
 // مكان الـ routes (هنضيفهم في الخطوات الجاية)
 // app.use('/api/v1/auth', require('./modules/auth/auth.routes'));
 // app.use('/api/v1/users', require('./modules/user/user.routes'));

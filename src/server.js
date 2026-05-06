@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🌐 URL: http://localhost:${PORT}`);
+  console.log(`📡 API: http://localhost:${PORT}/api/v1`);
 });
 
 // Handle unhandled promise rejections

@@ -1,15 +1,13 @@
 const nodemailer = require('nodemailer');
 
-/**
- * إعداد Nodemailer Transporter
- * هنستخدم Gmail
- */
 const createTransporter = () => {
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false,
     auth: {
       user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD // App Password من Gmail
+      pass: process.env.EMAIL_PASSWORD
     }
   });
 };
