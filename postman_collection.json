@@ -1,0 +1,258 @@
+{
+  "info": {
+    "name": "E‑Commerce Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection generated for quick testing of all major endpoints (auth, users, categories, brands, products, wishlist, cart, orders). Import this file into Postman."
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/register", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\",\n  \"phone\": \"+201234567890\"\n}" }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api","v1","auth","login"] },
+            "body": { "mode": "raw", "raw": "{ \"email\": \"john.doe@example.com\", \"password\": \"Password123!\" }" }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api","v1","users","me"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/categories", "host": ["{{baseUrl}}"], "path": ["api","v1","categories"] },
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Electronics\", \"description\": \"All electronic items\" }" }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/categories", "host": ["{{baseUrl}}"], "path": ["api","v1","categories"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/categories/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","categories","{{categoryId}}"] },
+            "body": { "mode": "raw", "raw": "{ \"description\": \"Updated description\" }" }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category (soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/categories/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["api","v1","categories","{{categoryId}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Brands",
+      "item": [
+        {
+          "name": "Create Brand",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/brands", "host": ["{{baseUrl}}"], "path": ["api","v1","brands"] },
+            "body": { "mode": "raw", "raw": "{ \"name\": \"Apple\", \"description\": \"Electronic brand\" }" }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Brands",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/brands", "host": ["{{baseUrl}}"], "path": ["api","v1","brands"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product (multipart – Cloudinary)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "type": "text", "value": "iPhone 15" },
+                { "key": "price", "type": "text", "value": "999" },
+                { "key": "brand", "type": "text", "value": "{{brandId}}" },
+                { "key": "category", "type": "text", "value": "{{categoryId}}" },
+                { "key": "images", "type": "file", "src": "{{sampleImagePath}}" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/products", "host": ["{{baseUrl}}"], "path": ["api","v1","products"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/products", "host": ["{{baseUrl}}"], "path": ["api","v1","products"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Wishlist",
+      "item": [
+        {
+          "name": "Add to Wishlist",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/wishlist", "host": ["{{baseUrl}}"], "path": ["api","v1","wishlist"] },
+            "body": { "mode": "raw", "raw": "{ \"productId\": \"{{productId}}\" }" }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Wishlist",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/wishlist", "host": ["{{baseUrl}}"], "path": ["api","v1","wishlist"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Add Item to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/cart/items", "host": ["{{baseUrl}}"], "path": ["api","v1","cart","items"] },
+            "body": { "mode": "raw", "raw": "{ \"productId\": \"{{productId}}\", \"quantity\": 2 }" }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Cart",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/cart", "host": ["{{baseUrl}}"], "path": ["api","v1","cart"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/orders", "host": ["{{baseUrl}}"], "path": ["api","v1","orders"] },
+            "body": { "mode": "raw", "raw": "{ \"cartId\": \"{{cartId}}\", \"shippingAddress\": { \"alias\": \"Home\", \"street\": \"123 Main St\", \"city\": \"Cairo\", \"country\": \"EG\" }, \"paymentMethod\": \"stripe\" }" }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/orders", "host": ["{{baseUrl}}"], "path": ["api","v1","orders"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payments (Stripe)",
+      "item": [
+        {
+          "name": "Create Checkout Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/v1/payments/checkout", "host": ["{{baseUrl}}"], "path": ["api","v1","payments","checkout"] },
+            "body": { "mode": "raw", "raw": "{ \"orderId\": \"{{orderId}}\" }" }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
