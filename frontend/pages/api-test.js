@@ -89,8 +89,7 @@ export default function APITester() {
     try {
       await api.patch('/users/me/change-password', {
         currentPassword: 'Test@123456',
-        password: 'NewTest@123456',
-        passwordConfirm: 'NewTest@123456'
+        newPassword: 'NewTest@123456'
       });
       addResult('✅ Change Password', 'success', 'Password changed successfully');
     } catch (error) {

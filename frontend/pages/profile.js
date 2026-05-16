@@ -2,175 +2,180 @@ import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import api from '../lib/api';
-import Cookies from 'js-cookie';
+import api, { swrFetcher, getErrorMessage } from '../lib/api';
+import { AuthGate } from '../hooks/useRequireAuth';
+import { useAuth } from '../context/AuthContext';
+import Spinner from '../components/ui/Spinner';
 
-const fetcher = (url) => api.get(url).then(res => res.data);
+const TABS = [
+  { id: 'profile', label: 'البيانات' },
+  { id: 'addresses', label: 'العناوين' },
+  { id: 'password', label: 'كلمة المرور' },
+  { id: 'danger', label: 'الحساب' },
+];
 
-export default function Profile() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: ''
-  });
+function ProfileContent() {
+  const [tab, setTab] = useState('profile');
+  const { logout, loadUser } = useAuth();
   const router = useRouter();
-  const { data, error, mutate } = useSWR('/users/me', fetcher);
+  const { data, mutate, isLoading } = useSWR('/users/me', swrFetcher);
+  const user = data?.data?.user;
+
+  const [profile, setProfile] = useState({ firstName: '', lastName: '', phone: '' });
+  const [passwords, setPasswords] = useState({ currentPassword: '', newPassword: '' });
+  const [address, setAddress] = useState({ alias: 'المنزل', street: '', city: '', country: 'مصر', phone: '' });
 
   useEffect(() => {
-    if (data?.data) {
-      const user = data.data.user;
-      setFormData({
+    if (user) {
+      setProfile({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
-        email: user.email || '',
-        phone: user.phone || ''
+        phone: user.phone || '',
       });
     }
-  }, [data]);
+  }, [user]);
 
-  if (!data) return <div className="container mx-auto px-4 py-8">Loading...</div>;
-
-  const user = data.data.user;
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleUpdate = async (e) => {
+  const saveProfile = async (e) => {
     e.preventDefault();
     try {
-      await api.patch('/users/me', formData);
-      toast.success('Profile updated successfully!');
-      setIsEditing(false);
+      await api.patch('/users/me', profile);
+      toast.success('تم التحديث');
       mutate();
-    } catch (error) {
-      toast.error('Failed to update profile');
+      loadUser();
+    } catch (err) {
+      toast.error(getErrorMessage(err));
     }
   };
 
-  const handleLogout = () => {
-    Cookies.remove('token');
-    toast.info('Logged out successfully');
-    router.push('/login');
+  const changePassword = async (e) => {
+    e.preventDefault();
+    try {
+      await api.patch('/users/me/change-password', passwords);
+      toast.success('تم تغيير كلمة المرور');
+      setPasswords({ currentPassword: '', newPassword: '' });
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
   };
 
+  const addAddress = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/users/me/addresses', address);
+      toast.success('تمت إضافة العنوان');
+      mutate();
+      setAddress({ alias: 'المنزل', street: '', city: '', country: 'مصر', phone: '' });
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
+  };
+
+  const deleteAddress = async (addressId) => {
+    try {
+      await api.delete(`/users/me/addresses/${addressId}`);
+      toast.info('تم الحذف');
+      mutate();
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
+  };
+
+  const deleteAccount = async () => {
+    if (!confirm('حذف الحساب نهائياً؟')) return;
+    try {
+      await api.delete('/users/me');
+      logout();
+      router.push('/');
+      toast.info('تم حذف الحساب');
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
+  };
+
+  if (isLoading) return <p className="flex justify-center py-12"><Spinner /></p>;
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Profile</h1>
+    <section className="grid gap-8 lg:grid-cols-4">
+      <nav className="flex flex-wrap gap-2 lg:flex-col">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={`rounded-xl px-4 py-2.5 text-sm font-medium transition ${
+              tab === t.id ? 'bg-brand-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </nav>
 
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-        {isEditing ? (
-          <form onSubmit={handleUpdate} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                disabled
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                type="submit"
-                className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold"
-              >
-                Save Changes
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
-                className="flex-1 bg-gray-300 text-gray-800 py-2 rounded-lg hover:bg-gray-400 font-semibold"
-              >
-                Cancel
-              </button>
-            </div>
+      <section className="card p-6 lg:col-span-3">
+        {tab === 'profile' && (
+          <form className="space-y-4" onSubmit={saveProfile}>
+            <h2 className="text-lg font-bold">البيانات الشخصية</h2>
+            <p className="text-sm text-slate-500">البريد: {user?.email}</p>
+            <p className="text-sm text-slate-500">الدور: {user?.role}</p>
+            <input className="input-field" placeholder="الاسم الأول" value={profile.firstName} onChange={(e) => setProfile({ ...profile, firstName: e.target.value })} />
+            <input className="input-field" placeholder="اسم العائلة" value={profile.lastName} onChange={(e) => setProfile({ ...profile, lastName: e.target.value })} />
+            <input className="input-field" placeholder="الهاتف" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} />
+            <button type="submit" className="btn-primary">حفظ</button>
           </form>
-        ) : (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-gray-600">First Name</p>
-                <p className="text-lg font-semibold">{user.firstName}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Last Name</p>
-                <p className="text-lg font-semibold">{user.lastName}</p>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-600">Email</p>
-              <p className="text-lg font-semibold">{user.email}</p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-600">Phone</p>
-              <p className="text-lg font-semibold">{user.phone}</p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-600">Role</p>
-              <p className="text-lg font-semibold capitalize">{user.role || 'Customer'}</p>
-            </div>
-
-            <div className="flex gap-4 pt-4">
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold"
-              >
-                Edit Profile
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 font-semibold"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
         )}
-      </div>
-    </div>
+
+        {tab === 'addresses' && (
+          <section className="space-y-6">
+            <h2 className="text-lg font-bold">العناوين</h2>
+            <ul className="space-y-3">
+              {(user?.addresses || []).map((addr) => (
+                <li key={addr._id} className="flex items-start justify-between rounded-xl border border-surface-border p-4">
+                  <span className="text-sm">
+                    <strong>{addr.alias}</strong> — {addr.street}, {addr.city}, {addr.country}
+                  </span>
+                  <button type="button" className="text-sm text-red-600" onClick={() => deleteAddress(addr._id)}>حذف</button>
+                </li>
+              ))}
+            </ul>
+            <form className="space-y-3 border-t border-surface-border pt-6" onSubmit={addAddress}>
+              <h3 className="font-semibold">إضافة عنوان</h3>
+              <input className="input-field" placeholder="التسمية" value={address.alias} onChange={(e) => setAddress({ ...address, alias: e.target.value })} />
+              <input className="input-field" placeholder="الشارع" value={address.street} onChange={(e) => setAddress({ ...address, street: e.target.value })} required />
+              <input className="input-field" placeholder="المدينة" value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} required />
+              <input className="input-field" placeholder="الدولة" value={address.country} onChange={(e) => setAddress({ ...address, country: e.target.value })} required />
+              <button type="submit" className="btn-primary">إضافة</button>
+            </form>
+          </section>
+        )}
+
+        {tab === 'password' && (
+          <form className="space-y-4" onSubmit={changePassword}>
+            <h2 className="text-lg font-bold">تغيير كلمة المرور</h2>
+            <input type="password" className="input-field" placeholder="كلمة المرور الحالية" value={passwords.currentPassword} onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })} required />
+            <input type="password" className="input-field" placeholder="كلمة المرور الجديدة" value={passwords.newPassword} onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })} required />
+            <button type="submit" className="btn-primary">تحديث</button>
+          </form>
+        )}
+
+        {tab === 'danger' && (
+          <section className="space-y-4">
+            <h2 className="text-lg font-bold text-red-700">منطقة الخطر</h2>
+            <button type="button" className="btn-danger" onClick={deleteAccount}>حذف الحساب</button>
+            <button type="button" className="btn-secondary block" onClick={() => { logout(); router.push('/login'); }}>تسجيل الخروج</button>
+          </section>
+        )}
+      </section>
+    </section>
+  );
+}
+
+export default function Profile() {
+  return (
+    <section className="container-app py-10">
+      <h1 className="page-title mb-8">حسابي</h1>
+      <AuthGate>
+        <ProfileContent />
+      </AuthGate>
+    </section>
   );
 }

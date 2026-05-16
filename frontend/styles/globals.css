@@ -1,3 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface-muted text-slate-800 antialiased;
+  }
+}
+
+@layer components {
+  .container-app {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand-600 text-white shadow-sm hover:bg-brand-700 hover:shadow-md;
+  }
+
+  .btn-secondary {
+    @apply btn border border-surface-border bg-white text-slate-700 hover:border-brand-300 hover:bg-brand-50;
+  }
+
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-surface-border bg-white px-4 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20;
+  }
+
+  .card {
+    @apply rounded-2xl border border-surface-border bg-white shadow-card transition-shadow duration-300;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-card-hover;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl;
+  }
+
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-wider text-brand-600;
+  }
+}

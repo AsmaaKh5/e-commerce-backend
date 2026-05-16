@@ -13,7 +13,7 @@ class CartRepository extends BaseRepository {
   async addItem(userId, productId, quantity = 1) {
     let cart = await this.findOne({ user: userId });
     if (!cart) {
-      cart = await this.create({ user: userId, items: [{ product: productId, quantity }] });
+      await this.create({ user: userId, items: [{ product: productId, quantity }] });
     } else {
       const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
       if (itemIndex > -1) {
@@ -23,7 +23,7 @@ class CartRepository extends BaseRepository {
       }
       await cart.save();
     }
-    return cart;
+    return await this.findByUser(userId);
   }
 
   async updateItemQuantity(userId, itemId, quantity) {
@@ -39,7 +39,7 @@ class CartRepository extends BaseRepository {
       item.quantity = quantity;
     }
     await cart.save();
-    return cart;
+    return await this.findByUser(userId);
   }
 
   async removeItem(userId, itemId) {
@@ -48,7 +48,7 @@ class CartRepository extends BaseRepository {
 
     cart.items.id(itemId).remove();
     await cart.save();
-    return cart;
+    return await this.findByUser(userId);
   }
 }
 

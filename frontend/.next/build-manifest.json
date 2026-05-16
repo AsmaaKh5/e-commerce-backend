@@ -27,30 +27,30 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/cart": [
+    "/forgot-password": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/cart.js"
-    ],
-    "/categories": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/categories.js"
+      "static/chunks/pages/forgot-password.js"
     ],
     "/login": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/login.js"
     ],
-    "/products": [
+    "/profile": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/products.js"
+      "static/chunks/pages/profile.js"
     ],
     "/register": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/register.js"
+    ],
+    "/reset-password": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/reset-password.js"
     ]
   },
   "ampFirstPages": []

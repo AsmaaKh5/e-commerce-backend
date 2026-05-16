@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const wishlistController = require('./wishlist.controller');
-const { verifyToken } = require('../../middlewares/verifyToken');
-
+const verifyToken = require('../../middlewares/verifyToken');
 router.use(verifyToken);
 
 router

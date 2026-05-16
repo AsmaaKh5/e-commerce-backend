@@ -3,74 +3,61 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import api from '../lib/api';
-import Cookies from 'js-cookie';
+import { getErrorMessage } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const redirect = router.query.redirect || '/';
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await api.post('/auth/login', data);
-      Cookies.set('token', response.data.token);
-      toast.success('Login successful!');
-      router.push('/');
+      await login(data);
+      toast.success('تم تسجيل الدخول بنجاح');
+      router.push(redirect);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
-        <div>
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              id="email"
-              type="email"
-              {...register('email', { required: 'Email is required' })}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              id="password"
-              type="password"
-              {...register('password', { required: 'Password is required' })}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-            {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
-          </div>
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-          </div>
-        </form>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
-            <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">
-              Sign up
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
+    <section className="container-app flex min-h-[70vh] items-center justify-center py-12">
+      <form className="card w-full max-w-md space-y-5 p-8 animate-slide-up" onSubmit={handleSubmit(onSubmit)}>
+        <p className="section-label">مرحباً بعودتك</p>
+        <h1 className="page-title">تسجيل الدخول</h1>
+
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-slate-700">البريد الإلكتروني</span>
+          <input type="email" className="input-field" {...register('email', { required: 'البريد مطلوب' })} />
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-slate-700">كلمة المرور</span>
+          <input type="password" className="input-field" {...register('password', { required: 'كلمة المرور مطلوبة' })} />
+          {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+        </label>
+
+        <p className="flex flex-wrap justify-between gap-2 text-sm">
+          <Link href="/forgot-password" className="text-brand-600 hover:underline">نسيت كلمة المرور؟</Link>
+          <Link href="/verify-email" className="text-slate-500 hover:underline">تفعيل البريد</Link>
+        </p>
+
+        <button type="submit" disabled={loading} className="btn-primary w-full">
+          {loading ? 'جاري الدخول...' : 'دخول'}
+        </button>
+
+        <p className="text-center text-sm text-slate-600">
+          ليس لديك حساب؟{' '}
+          <Link href="/register" className="font-semibold text-brand-600 hover:underline">سجّل الآن</Link>
+        </p>
+      </form>
+    </section>
   );
 }

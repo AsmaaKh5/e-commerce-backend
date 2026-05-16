@@ -1,29 +1,43 @@
+import Link from 'next/link';
+import { FaStore } from 'react-icons/fa';
+
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 text-white py-8">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <h3 className="text-lg font-semibold mb-4">E-Commerce</h3>
-            <p>Your one-stop shop for all your needs.</p>
+    <footer className="mt-auto border-t border-surface-border bg-slate-900 text-slate-300">
+      <div className="container-app grid gap-10 py-12 md:grid-cols-3">
+        <div>
+          <div className="mb-4 flex items-center gap-2 font-bold text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500">
+              <FaStore />
+            </span>
+            ShopHub
           </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><a href="/" className="hover:text-gray-300">Home</a></li>
-              <li><a href="/products" className="hover:text-gray-300">Products</a></li>
-              <li><a href="/categories" className="hover:text-gray-300">Categories</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Contact</h3>
-            <p>Email: info@ecommerce.com</p>
-            <p>Phone: +1 (123) 456-7890</p>
-          </div>
+          <p className="text-sm leading-relaxed text-slate-400">
+            متجرك الإلكتروني الحديث — منتجات مختارة، تجربة شراء سلسة، ودعم كامل لكل مزايا المنصة.
+          </p>
         </div>
-        <div className="mt-8 pt-8 border-t border-gray-700 text-center">
-          <p>&copy; 2024 E-Commerce. All rights reserved.</p>
+
+        <div>
+          <h3 className="mb-4 font-semibold text-white">روابط سريعة</h3>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/products" className="hover:text-white">المنتجات</Link></li>
+            <li><Link href="/brands" className="hover:text-white">العلامات التجارية</Link></li>
+            <li><Link href="/categories" className="hover:text-white">التصنيفات</Link></li>
+            <li><Link href="/wishlist" className="hover:text-white">المفضلة</Link></li>
+          </ul>
         </div>
+
+        <div>
+          <h3 className="mb-4 font-semibold text-white">الحساب</h3>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/login" className="hover:text-white">تسجيل الدخول</Link></li>
+            <li><Link href="/register" className="hover:text-white">إنشاء حساب</Link></li>
+            <li><Link href="/profile" className="hover:text-white">الملف الشخصي</Link></li>
+          </ul>
+        </div>
+      </div>
+      <div className="border-t border-slate-800 py-6 text-center text-sm text-slate-500">
+        © {new Date().getFullYear()} ShopHub. جميع الحقوق محفوظة.
       </div>
     </footer>
   );

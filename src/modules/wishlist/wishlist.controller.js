@@ -3,7 +3,7 @@ const asyncWrapper = require('../../middlewares/asyncWrapper');
 const httpStatusText = require('../../utils/httpStatusText');
 
 exports.getWishlist = asyncWrapper(async (req, res) => {
-  const wishlist = await wishlistService.getUserWishlist(req.user._id);
+  const wishlist = await wishlistService.getUserWishlist(req.user.userId);
   res.status(200).json({
     status: httpStatusText.SUCCESS,
     data: { wishlist }
@@ -12,7 +12,7 @@ exports.getWishlist = asyncWrapper(async (req, res) => {
 
 exports.addToWishlist = asyncWrapper(async (req, res) => {
   const { productId } = req.body;
-  const wishlistItem = await wishlistService.addToWishlist(req.user._id, productId);
+  const wishlistItem = await wishlistService.addToWishlist(req.user.userId, productId);
   res.status(201).json({
     status: httpStatusText.SUCCESS,
     data: { wishlistItem }
@@ -21,7 +21,7 @@ exports.addToWishlist = asyncWrapper(async (req, res) => {
 
 exports.removeFromWishlist = asyncWrapper(async (req, res) => {
   const { productId } = req.params;
-  const result = await wishlistService.removeFromWishlist(req.user._id, productId);
+  const result = await wishlistService.removeFromWishlist(req.user.userId, productId);
   res.status(200).json({
     status: httpStatusText.SUCCESS,
     message: result.message
